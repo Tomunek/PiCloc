@@ -1,3 +1,6 @@
+// FLAGS
+// #define SERIAL_DEBUG // enable serial output for debugging
+
 #include "hardware/rtc.h"
 #include "pico/multicore.h"
 #include "pico/util/datetime.h"
@@ -7,9 +10,8 @@
 #endif
 
 #include "display.h"
+#include "hardware.h"
 
-#define GPIO_BTN_R 20
-#define GPIO_BTN_L 21
 
 #define MAIN_TICK_MAX 1000
 #define HOW_OFTEN_REGISTER_BTN 250

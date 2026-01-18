@@ -1,10 +1,17 @@
 #include "pico/stdlib.h"
 
 #include "display.h"
-#include "display_hw.h"
+#include "hardware.h"
 
 static uint8_t display_state[4];
 static bool display_dp_state[4];
+
+// defined at the bottom
+const uint8_t COMMONS[4];
+const uint8_t SEGMENTS[8];
+const uint8_t DIGIT_SEGMENTS[10][7];
+const uint8_t DIGIT_SEGMENT_COUNT[10];
+const uint8_t DIGIT_SEGMENTS_R[10][7];
 
 void display_main(void) {
     _display_setup_gpio();
@@ -46,39 +53,16 @@ void display_set_dp(bool a, bool b, bool c, bool d) {
 }
 
 void _display_setup_gpio(void) {
-    gpio_init(COMMON_1);
-    gpio_init(COMMON_2);
-    gpio_init(COMMON_3);
-    gpio_init(COMMON_4);
+    for (int i = 0; i<4;i++){
+        gpio_init(COMMONS[i]);
+        gpio_set_dir(COMMONS[i], 1);
+        gpio_put(COMMONS[i], 1);
+    }
 
-    gpio_set_dir(COMMON_1, 1);
-    gpio_set_dir(COMMON_2, 1);
-    gpio_set_dir(COMMON_3, 1);
-    gpio_set_dir(COMMON_4, 1);
-
-    gpio_put(COMMON_1, 1);
-    gpio_put(COMMON_2, 1);
-    gpio_put(COMMON_3, 1);
-    gpio_put(COMMON_4, 1);
-
-    gpio_init(SEGMENT_A);
-    gpio_init(SEGMENT_B);
-    gpio_init(SEGMENT_C);
-    gpio_init(SEGMENT_D);
-    gpio_init(SEGMENT_E);
-    gpio_init(SEGMENT_F);
-    gpio_init(SEGMENT_G);
-    gpio_init(SEGMENT_DP);
-
-    gpio_set_dir(SEGMENT_A, 1);
-    gpio_set_dir(SEGMENT_B, 1);
-    gpio_set_dir(SEGMENT_C, 1);
-    gpio_set_dir(SEGMENT_D, 1);
-    gpio_set_dir(SEGMENT_E, 1);
-    gpio_set_dir(SEGMENT_F, 1);
-    gpio_set_dir(SEGMENT_G, 1);
-    gpio_set_dir(SEGMENT_DP, 1);
-
+    for (int i = 0; i<8;i++){
+        gpio_init(SEGMENTS[i]);
+        gpio_set_dir(SEGMENTS[i], 1);
+    }
     _display_all_segments_off();
 }
 
@@ -134,3 +118,202 @@ uint8_t _display_set_segments(uint8_t pos, uint8_t number, bool dp) {
     }
     return segment_count;
 }
+
+// all displays' common GPIOs
+const uint8_t COMMONS[4] = {
+    COMMON_1,
+    COMMON_2,
+    COMMON_3,
+    COMMON_4,
+};
+
+// all displays' segment GPIOs
+const uint8_t SEGMENTS[8] = {
+    SEGMENT_A,
+    SEGMENT_B,
+    SEGMENT_C,
+    SEGMENT_D,
+    SEGMENT_E,
+    SEGMENT_F,
+    SEGMENT_G,
+    SEGMENT_DP,
+};
+
+// segments needed for every digit
+const uint8_t DIGIT_SEGMENTS[10][7] = {
+    {
+        // 0
+        SEGMENT_A,
+        SEGMENT_B,
+        SEGMENT_C,
+        SEGMENT_D,
+        SEGMENT_E,
+        SEGMENT_F,
+    },
+    {
+        // 1
+        SEGMENT_B,
+        SEGMENT_C,
+    },
+    {
+        // 2
+        SEGMENT_A,
+        SEGMENT_B,
+        SEGMENT_D,
+        SEGMENT_E,
+        SEGMENT_G,
+    },
+    {
+        // 3
+        SEGMENT_A,
+        SEGMENT_B,
+        SEGMENT_C,
+        SEGMENT_D,
+        SEGMENT_G,
+    },
+    {
+        // 4
+        SEGMENT_B,
+        SEGMENT_C,
+        SEGMENT_F,
+        SEGMENT_G,
+    },
+    {
+        // 5
+        SEGMENT_A,
+        SEGMENT_C,
+        SEGMENT_D,
+        SEGMENT_F,
+        SEGMENT_G,
+    },
+    {
+        // 6
+        SEGMENT_A,
+        SEGMENT_C,
+        SEGMENT_D,
+        SEGMENT_E,
+        SEGMENT_F,
+        SEGMENT_G,
+    },
+    {
+        // 7
+        SEGMENT_A,
+        SEGMENT_B,
+        SEGMENT_C,
+    },
+    {
+        // 8
+        SEGMENT_A,
+        SEGMENT_B,
+        SEGMENT_C,
+        SEGMENT_D,
+        SEGMENT_E,
+        SEGMENT_F,
+        SEGMENT_G,
+    },
+    {
+        // 9
+        SEGMENT_A,
+        SEGMENT_B,
+        SEGMENT_C,
+        SEGMENT_D,
+        SEGMENT_F,
+        SEGMENT_G,
+    },
+};
+
+const uint8_t DIGIT_SEGMENT_COUNT[10] = {
+    6, // 0
+    2, // 1
+    5, // 2
+    5, // 3
+    4, // 4
+    5, // 5
+    6, // 6
+    3, // 7
+    7, // 8
+    6  // 9
+};
+
+// segments needed for every digit (for rotated third display)
+const uint8_t DIGIT_SEGMENTS_R[10][7] = {
+    {
+        // 0
+        SEGMENT_R_A,
+        SEGMENT_R_B,
+        SEGMENT_R_C,
+        SEGMENT_R_D,
+        SEGMENT_R_E,
+        SEGMENT_R_F,
+    },
+    {
+        // 1
+        SEGMENT_R_E,
+        SEGMENT_R_F,
+    },
+    {
+        // 2
+        SEGMENT_R_A,
+        SEGMENT_R_B,
+        SEGMENT_R_D,
+        SEGMENT_R_E,
+        SEGMENT_R_G,
+    },
+    {
+        // 3
+        SEGMENT_R_A,
+        SEGMENT_R_D,
+        SEGMENT_R_E,
+        SEGMENT_R_F,
+        SEGMENT_R_G,
+    },
+    {
+        // 4
+        SEGMENT_R_C,
+        SEGMENT_R_E,
+        SEGMENT_R_F,
+        SEGMENT_R_G,
+    },
+    {
+        // 5
+        SEGMENT_R_A,
+        SEGMENT_R_C,
+        SEGMENT_R_D,
+        SEGMENT_R_F,
+        SEGMENT_R_G,
+    },
+    {
+        // 6
+        SEGMENT_R_A,
+        SEGMENT_R_B,
+        SEGMENT_R_C,
+        SEGMENT_R_D,
+        SEGMENT_R_F,
+        SEGMENT_R_G,
+    },
+    {
+        // 7
+        SEGMENT_R_D,
+        SEGMENT_R_E,
+        SEGMENT_R_F,
+    },
+    {
+        // 8
+        SEGMENT_R_A,
+        SEGMENT_R_B,
+        SEGMENT_R_C,
+        SEGMENT_R_D,
+        SEGMENT_R_E,
+        SEGMENT_R_F,
+        SEGMENT_R_G,
+    },
+    {
+        // 9
+        SEGMENT_R_A,
+        SEGMENT_R_C,
+        SEGMENT_R_D,
+        SEGMENT_R_E,
+        SEGMENT_R_F,
+        SEGMENT_R_G,
+    },
+};
