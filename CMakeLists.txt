@@ -33,12 +33,22 @@ project(picloc C CXX ASM)
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
-# Add executable. Default name is the project name, version 0.1
-
+# Add executable
 add_executable(picloc picloc.c display.c)
 
 pico_set_program_name(picloc "picloc")
-pico_set_program_version(picloc "0.1")
+pico_set_program_url(picloc "https://github.com/Tomunek/PiCloc")
+pico_set_program_description(picloc "Simple Raspberry Pi Pico clock.")
+
+# Get commit SHA
+execute_process(COMMAND git log --pretty=format:'%h' -n 1
+OUTPUT_VARIABLE GIT_REV
+ERROR_QUIET)
+
+if ("${GIT_REV}" STREQUAL "")
+set(GIT_REV "N/A")
+endif()
+pico_set_program_version(picloc "${GIT_REV}")
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(picloc 0)
@@ -57,4 +67,3 @@ target_include_directories(picloc PRIVATE
 )
 
 pico_add_extra_outputs(picloc)
-
