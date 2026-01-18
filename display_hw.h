@@ -5,12 +5,12 @@
 // SEGMENT GPIO
 #define SEGMENT_A 3
 #define SEGMENT_B 2
-#define SEGMENT_C 29
+#define SEGMENT_C 26
 #define SEGMENT_D 19
 #define SEGMENT_E 18
 #define SEGMENT_F 4
 #define SEGMENT_G 5
-#define SEGMENT_DP 23
+#define SEGMENT_DP 27
 
 // COMMON GPIO
 #define COMMON_1 17
