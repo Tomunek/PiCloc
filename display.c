@@ -1,4 +1,5 @@
 #include "pico/stdlib.h"
+#include "settings.h"
 
 #include "display.h"
 #include "hardware.h"
@@ -28,7 +29,11 @@ void display_main(void) {
             } else {
                 state_dp = false;
             }
+            #ifdef ROTATE_THIRD_DISPLAY
             display_set_dp(false, state_dp, state_dp, false);
+            #else
+            display_set_dp(false, state_dp, false, false);
+            #endif
         }
 
         tick++;
@@ -53,13 +58,13 @@ void display_set_dp(bool a, bool b, bool c, bool d) {
 }
 
 void _display_setup_gpio(void) {
-    for (int i = 0; i<4;i++){
+    for (int i = 0; i < 4; i++) {
         gpio_init(COMMONS[i]);
         gpio_set_dir(COMMONS[i], 1);
         gpio_put(COMMONS[i], 1);
     }
 
-    for (int i = 0; i<8;i++){
+    for (int i = 0; i < 8; i++) {
         gpio_init(SEGMENTS[i]);
         gpio_set_dir(SEGMENTS[i], 1);
     }
@@ -102,18 +107,27 @@ uint8_t _display_set_segments(uint8_t pos, uint8_t number, bool dp) {
     number = number % 10;
     uint8_t segment_count = DIGIT_SEGMENT_COUNT[number];
     for (uint8_t i = 0; i < segment_count; i++) {
+#ifdef ROTATE_THIRD_DISPLAY
         if (pos != 2) {
             gpio_put(DIGIT_SEGMENTS[number][i], 1);
         } else {
             gpio_put(DIGIT_SEGMENTS_R[number][i], 1);
         }
+#else
+        gpio_put(DIGIT_SEGMENTS[number][i], 1);
+#endif
     }
     if (dp) {
+#ifdef ROTATE_THIRD_DISPLAY
         if (pos != 2) {
             gpio_put(SEGMENT_DP, 1);
         } else {
             gpio_put(SEGMENT_R_DP, 1);
         }
+#else
+        gpio_put(SEGMENT_DP, 1);
+#endif
+
         segment_count++;
     }
     return segment_count;

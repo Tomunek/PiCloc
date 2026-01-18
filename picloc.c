@@ -1,6 +1,4 @@
-// FLAGS
-// #define SERIAL_DEBUG // enable serial output for debugging
-
+#include "settings.h"
 #include "hardware/rtc.h"
 #include "pico/multicore.h"
 #include "pico/util/datetime.h"
